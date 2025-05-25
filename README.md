@@ -44,22 +44,18 @@ As análises que podem ser realizadas com este conjunto de dados são diversas e
     *   Identificar os países que são os maiores mercados em termos de receita e volume de vendas.
     *   Detectar padrões e tendências de vendas específicas por região.
 
-4.  **Impacto dos Descontos:**
-    *   Avaliar a eficácia dos cupons de desconto na impulsão do volume de vendas e na receita líquida.
-    *   Calcular o valor médio do desconto aplicado e analisar sua relação com as vendas.
-
-5.  **Tendências de Vendas ao Longo do Tempo:**
+4. **Tendências de Vendas ao Longo do Tempo:**
     *   Identificar períodos de alta e baixa nas vendas (sazonalidades).
     *   Acompanhar o crescimento ou declínio das vendas gerais e por categoria de produto.
 
-6.  **Demografia dos Compradores:**
+5.  **Demografia dos Compradores:**
     *   Analisar o perfil etário dos compradores a partir da data de nascimento.
     *   Correlacionar a faixa etária com as preferências de produtos ou o valor gasto.
 
-7.  **Valor Médio do Pedido:**
+6.  **Valor Médio do Pedido:**
     *   Calcular o valor médio de cada transação e a quantidade média de itens por pedido.
 
-8.  **Distribuição de Vendas por Moeda:**
+7.  **Distribuição de Vendas por Moeda:**
     *   Analisar a proporção das vendas realizadas em EUR, USD e GBP.
 
 ## Como Contribuir
