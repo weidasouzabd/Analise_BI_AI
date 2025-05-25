@@ -16,9 +16,6 @@ Descobrir quais países (delivery_country) são os maiores mercados em termos de
 Identificar tendências de vendas por região e produto.
 Impacto de Descontos:
 
-Medir a eficácia dos cupons de desconto (discount_coupon) no volume de vendas e na receita líquida.
-Calcular o discount_value médio aplicado e sua correlação com a quantity vendida.
-Analisar quais produtos ou plataformas se beneficiam mais dos descontos.
 Tendências de Vendas ao Longo do Tempo (date):
 
 Identificar picos e quedas de vendas em períodos específicos (mensal, trimestral, etc.).
