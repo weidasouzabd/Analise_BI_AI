@@ -1,0 +1,158 @@
+# --- PRÉ-PROCESSAMENTO DE DADOS ---
+# Converter colunas de data para o tipo datetime
+df['date'] = pd.to_datetime(df['date'])
+df['buyer_birth_date'] = pd.to_datetime(df['buyer_birth_date'])
+
+# Calcular a idade do comprador
+current_date_for_age = datetime.now()
+df['buyer_age'] = (current_date_for_age - df['buyer_birth_date']).dt.days / 365.25
+df['buyer_age'] = df['buyer_age'].astype(int) # Idade em anos inteiros
+
+# Criar coluna de ano-mês para análises temporais
+df['year_month'] = df['date'].dt.to_period('M')
+
+print(f"Dados carregados de '{FULL_FILE_PATH}' e pré-processados com sucesso!")
+print("\n--- INÍCIO DAS ANÁLISES ---")
+
+# --- ANÁLISE 1: DESEMPENHO DE VENDAS POR PRODUTO ---
+print("\n--- ANÁLISE 1: Desempenho de Vendas por Produto ---")
+
+# A. Receita Total e Quantidade Vendida por Produto
+agg_products_currency = df.groupby(['product_sold', 'currency']).agg(
+    total_quantity=('quantity', 'sum'),
+    total_price=('total_price', 'sum')
+).reset_index()
+
+df_product_total = agg_products_currency.pivot_table(
+    index='product_sold',
+    columns='currency',
+    values='total_price',
+    fill_value=0
+).add_prefix('Receita Total (').add_suffix(')')
+
+df_product_total['Quantidade Total Vendida'] = agg_products_currency.groupby('product_sold')['total_quantity'].sum()
+
+# Reorganizar colunas e resetar índice para o formato da tabela
+df_product_total = df_product_total[['Quantidade Total Vendida', 'Receita Total (EUR)', 'Receita Total (USD)', 'Receita Total (GBP)']]
+df_product_total = df_product_total.reset_index()
+
+print("\n1.A. Receita Total e Quantidade Vendida por Produto:")
+print(df_product_total.to_markdown(index=False))
+
+# B. Popularidade dos Produtos por Plataforma de Venda
+agg_product_site_currency = df.groupby(['product_sold', 'site', 'currency']).agg(
+    quantity_sold=('quantity', 'sum'),
+    total_price=('total_price', 'sum')
+).reset_index()
+
+df_product_site_pivot = agg_product_site_currency.pivot_table(
+    index=['product_sold', 'site'],
+    columns='currency',
+    values='total_price',
+    fill_value=0
+).add_prefix('Receita (').add_suffix(')')
+
+df_product_site_pivot['Quantidade Vendida'] = agg_product_site_currency.groupby(['product_sold', 'site'])['quantity_sold'].sum()
+
+df_product_site = df_product_site_pivot.reset_index()
+df_product_site = df_product_site[['product_sold', 'site', 'Quantidade Vendida', 'Receita (EUR)', 'Receita (USD)', 'Receita (GBP)']]
+
+print("\n1.B. Popularidade dos Produtos por Plataforma de Venda:")
+print(df_product_site.to_markdown(index=False))
+
+# C. Evolução Mensal das Vendas por Produto (Quantidade e Receita)
+agg_monthly_product_currency = df.groupby(['product_sold', 'year_month', 'currency']).agg(
+    quantity_sold=('quantity', 'sum'),
+    total_price=('total_price', 'sum')
+).reset_index()
+
+df_monthly_product_pivot = agg_monthly_product_currency.pivot_table(
+    index=['product_sold', 'year_month'],
+    columns='currency',
+    values='total_price',
+    fill_value=0
+).add_prefix('Receita (').add_suffix(')')
+
+df_monthly_product_pivot['Quantidade Vendida'] = agg_monthly_product_currency.groupby(['product_sold', 'year_month'])['quantity_sold'].sum()
+
+df_monthly_product = df_monthly_product_pivot.reset_index()
+df_monthly_product['Período'] = df_monthly_product['year_month'].dt.strftime('%b/%Y') # Formato 'Ago/2024'
+df_monthly_product = df_monthly_product[['product_sold', 'Período', 'Quantidade Vendida', 'Receita (EUR)', 'Receita (USD)', 'Receita (GBP)']]
+
+print("\n1.C. Evolução Mensal das Vendas por Produto (Quantidade e Receita):")
+print(df_monthly_product.to_markdown(index=False))
+
+
+# --- ANÁLISE 2: ANÁLISE DE PLATAFORMAS DE VENDA ---
+print("\n--- ANÁLISE 2: Análise de Plataformas de Venda ---")
+
+# A. Desempenho Geral de Vendas por Plataforma
+agg_site_currency = df.groupby(['site', 'currency']).agg(
+    total_quantity=('quantity', 'sum'),
+    total_price=('total_price', 'sum')
+).reset_index()
+
+df_site_total = agg_site_currency.pivot_table(
+    index='site',
+    columns='currency',
+    values='total_price',
+    fill_value=0
+).add_prefix('Receita Total (').add_suffix(')')
+
+df_site_total['Quantidade Total Vendida'] = agg_site_currency.groupby('site')['total_quantity'].sum()
+
+df_site_total = df_site_total[['Quantidade Total Vendida', 'Receita Total (EUR)', 'Receita Total (USD)', 'Receita Total (GBP)']]
+df_site_total = df_site_total.reset_index()
+
+print("\n2.A. Desempenho Geral de Vendas por Plataforma:")
+print(df_site_total.to_markdown(index=False))
+
+# B. Valores Médios por Transação por Plataforma
+df_invoice_total_per_site = df.groupby(['invoice_id', 'site'])['total_price'].sum().reset_index()
+avg_total_price_per_site = df_invoice_total_per_site.groupby('site')['total_price'].mean().reset_index()
+avg_total_price_per_site.rename(columns={'total_price': 'Preço Total Médio por Transação'}, inplace=True)
+
+avg_unit_price_per_site = df.groupby('site')['unit_price'].mean().reset_index()
+avg_unit_price_per_site.rename(columns={'unit_price': 'Preço Unitário Médio'}, inplace=True)
+
+df_site_avg_values = pd.merge(avg_unit_price_per_site, avg_total_price_per_site, on='site')
+
+print("\n2.B. Valores Médios por Transação por Plataforma:")
+print(df_site_avg_values.to_markdown(index=False))
+
+
+# --- ANÁLISE 3: ANÁLISE GEOGRÁFICA DE VENDAS ---
+print("\n--- ANÁLISE 3: Análise Geográfica de Vendas ---")
+
+# A. Receita e Volume de Vendas por País de Entrega
+agg_country_currency = df.groupby(['delivery_country', 'currency']).agg(
+    total_quantity=('quantity', 'sum'),
+    total_price=('total_price', 'sum')
+).reset_index()
+
+df_country_total = agg_country_currency.pivot_table(
+    index='delivery_country',
+    columns='currency',
+    values='total_price',
+    fill_value=0
+).add_prefix('Receita Total (').add_suffix(')')
+
+df_country_total['Quantidade Total Vendida'] = agg_country_currency.groupby('delivery_country')['total_quantity'].sum()
+
+df_country_total = df_country_total[['Quantidade Total Vendida', 'Receita Total (EUR)', 'Receita Total (USD)', 'Receita Total (GBP)']]
+df_country_total = df_country_total.reset_index()
+
+print("\n3.A. Receita e Volume de Vendas por País de Entrega:")
+print(df_country_total.to_markdown(index=False))
+
+
+# --- ANÁLISE 4: IDADE MÉDIA DOS COMPRADORES POR PRODUTO E REGIÃO ---
+print("\n--- ANÁLISE 4: Idade Média dos Compradores por Produto e Região ---")
+
+df_avg_age = df.groupby(['product_sold', 'delivery_country'])['buyer_age'].mean().round(0).astype(int).reset_index()
+df_avg_age.rename(columns={'buyer_age': 'Idade Média dos Compradores'}, inplace=True)
+
+print("\n4. Idade Média dos Compradores por Produto e Região:")
+print(df_avg_age.to_markdown(index=False))
+
+print("\n--- FIM DAS ANÁLISES ---")
