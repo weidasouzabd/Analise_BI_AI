@@ -1,1 +1,37 @@
+Serão implementadas as seguintes análises com o objetivo ter uma visão abrangente do desempenho de vendas e identificar oportunidades de melhoria ou crescimento da empresa:
 
+Desempenho de Vendas por Produto:
+
+Identificar quais produtos (product_sold) geram maior receita (total_price) e são vendidos em maior quantity.
+Analisar a popularidade dos produtos em diferentes plataformas de venda (site).
+Visualizar a evolução das vendas de cada produto ao longo do date.
+Análise de Plataformas de Venda (site):
+
+Comparar o desempenho de vendas (receita e quantidade) entre Etsy, Shopee e AliExpress.
+Determinar qual plataforma é mais eficaz para cada tipo de produto.
+Avaliar a média de unit_price e total_price por transação em cada site.
+Análise Geográfica de Vendas (delivery_country):
+
+Descobrir quais países (delivery_country) são os maiores mercados em termos de receita e volume de vendas.
+Identificar tendências de vendas por região e produto.
+Impacto de Descontos:
+
+Medir a eficácia dos cupons de desconto (discount_coupon) no volume de vendas e na receita líquida.
+Calcular o discount_value médio aplicado e sua correlação com a quantity vendida.
+Analisar quais produtos ou plataformas se beneficiam mais dos descontos.
+Tendências de Vendas ao Longo do Tempo (date):
+
+Identificar picos e quedas de vendas em períodos específicos (mensal, trimestral, etc.).
+Analisar sazonalidades ou eventos que possam influenciar as vendas.
+Acompanhar o crescimento ou declínio das vendas gerais e por categoria de produto.
+Demografia dos Compradores:
+
+Criar faixas etárias a partir da buyer_birth_date para entender o perfil dos clientes.
+Correlacionar a idade dos compradores com os produtos preferidos ou o valor gasto.
+Valor Médio do Pedido:
+
+Calcular o total_price médio por transação (invoice_id) para entender o comportamento de compra dos clientes.
+Calcular a quantity média de itens por pedido.
+Distribuição de Vendas por Moeda (currency):
+
+Analisar a proporção de vendas realizadas em cada moeda (EUR, USD, GBP) e, se necessário, considerar conversões para uma moeda base para relatórios unificados.
